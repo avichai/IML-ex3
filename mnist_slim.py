@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # An MNIST interactive demo
-# Yoni Wexler. April 20, 2017
 
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
@@ -9,6 +8,8 @@ import os
 import shutil
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 # import cv2
 
 
@@ -21,7 +22,7 @@ def build_network(images):
         net = slim.max_pool2d(net, [2, 2], 2, scope='pool2')
         net = slim.flatten(net)
         net = slim.fully_connected(net, 128, scope='fc3')
-        embeddings = net    # So we can see the outputs in tensorboard
+        embeddings = net  # So we can see the outputs in tensorboard
         predictions = slim.fully_connected(net, 10, activation_fn=None,
                                            scope='fc4')
     return predictions, embeddings
@@ -47,7 +48,8 @@ def train_net(basedir):
         tf.cast(tf.equal(tf.argmax(predictions, axis=1), tf.argmax(y, axis=1)),
                 tf.float32))
     # Define the optimizer:
-    train_step = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(compute_loss)
+    train_step = tf.train.GradientDescentOptimizer(learning_rate=0.1).minimize(
+        compute_loss)
 
     # Show progress with TensorBoard:
     tf.summary.scalar('Loss', compute_loss)
@@ -64,9 +66,10 @@ def train_net(basedir):
 
         losses = []
         accuracies = []
-        print("%10s | %10s | %5s%% | %5s%%" % ('Samples', 'Loss', 'Train', 'Test'))
+        print("%10s | %10s | %5s%% | %5s%%" % (
+        'Samples', 'Loss', 'Train', 'Test'))
         for i in range(1, 500):
-            batchx, batchy = mnist.train.next_batch(32)            
+            batchx, batchy = mnist.train.next_batch(32)
             _, loss, acc, summ = sess.run([train_step, compute_loss,
                                            compute_accuracy, summaries],
                                           feed_dict={x: batchx, y: batchy})
@@ -75,12 +78,14 @@ def train_net(basedir):
             train_writer.add_summary(summ, i)
 
             if i % 20 == 0:
-                tloss, tacc, summ = sess.run([compute_loss, compute_accuracy, summaries],
-                                             feed_dict={x: mnist.test.images,
-                                                        y: mnist.test.labels})
-                print("%10d | %10.6f | %5.2f%% | %5.2f%%" % (i*len(batchy), np.mean(losses),
-                                                            100.0 * np.mean(accuracies),
-                                                            100.0 * tacc))
+                tloss, tacc, summ = sess.run(
+                    [compute_loss, compute_accuracy, summaries],
+                    feed_dict={x: mnist.test.images,
+                               y: mnist.test.labels})
+                print("%10d | %10.6f | %5.2f%% | %5.2f%%" % (
+                i * len(batchy), np.mean(losses),
+                100.0 * np.mean(accuracies),
+                100.0 * tacc))
                 losses = []
                 accuracies = []
                 test_writer.add_summary(summ, i)
@@ -98,7 +103,6 @@ def train_or_load_model(basedir):
         latest_checkpoint = tf.train.latest_checkpoint(basedir)
         print('Now re-run to play with the model')
         exit()
-        
 
     sess = tf.Session()
 
@@ -142,12 +146,12 @@ def examine_model(model):
     print("Test accuracy is: %f%%" % (100 * mean_acc))
     mistakes = np.where(~acc)[0]
     print('Found %d mistakes' % len(mistakes))
-    mistakes = mistakes[:100]   # Keep max 100
-    show_images_and_labels(mnist.test.images[mistakes], test_predictions[mistakes])
+    mistakes = mistakes[:100]  # Keep max 100
+    show_images_and_labels(mnist.test.images[mistakes],
+                           test_predictions[mistakes])
 
 
 if __name__ == "__main__":
-
     basedir = 'mnist_models'
 
     model = train_or_load_model(basedir)

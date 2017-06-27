@@ -182,7 +182,8 @@ def test_learning_algorithms():
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     train_options = [tf.train.AdamOptimizer(eta).minimize(cross_entropy),
-                     tf.train.GradientDescentOptimizer(eta).minimize(cross_entropy)]
+                     tf.train.GradientDescentOptimizer(eta).minimize(
+                         cross_entropy)]
     all_train_errors = []
     all_test_errors = []
     for train_step in train_options:
